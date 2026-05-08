@@ -94,7 +94,7 @@ public class DatabaseSetup {
 
             // 4. 让 Java 把全套图纸交给 MySQL 去执行
             stmt.executeUpdate(completeSql);
-            System.out.println("大功告成！组长牛逼，所有表结构都已经完美建好啦！！！可以截图去发邮件汇报啦！🎉🎉🎉");
+            System.out.println("大功告成！");
 
             // 5. 关门走人
             stmt.close();
