@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.arcadesystem.HelloController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <!-- 初始欢迎标签 -->
+    <Label fx:id="welcomeText"/>
+    <!-- 初始Hello按钮 -->
+    <Button text="Hello!" onAction="#onHelloButtonClick"/>
+
+    <!-- 会员操作按钮组（默认隐藏，点击Hello后显示） -->
+    <VBox fx:id="memberButtons" spacing="10.0" visible="false">
+        <Button text="add member" onAction="#onAddMemberClick"/>
+        <Button text="delete member" onAction="#onDeleteMemberClick"/>
+        <Button text="edit member" onAction="#onEditMemberClick"/>
+        <Button text="search member" onAction="#onSearchMemberClick"/>
+    </VBox>
+
+    <!-- 功能提示标签 -->
+    <Label fx:id="functionTip" visible="false"/>
+</VBox>
