@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS machines (
 CREATE TABLE IF NOT EXISTS token_transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     member_id INT NOT NULL,
-    package_id INT NOT NULL,
+    package_id INT,
     transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     amount_paid DECIMAL(10, 2) NOT NULL,
     tokens_purchased INT NOT NULL,

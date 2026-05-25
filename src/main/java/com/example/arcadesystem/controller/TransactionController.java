@@ -36,8 +36,9 @@ public class TransactionController {
 
     @GetMapping("/transactions")
     public ApiResponse<Map<String, Object>> listTransactions(
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.ok(transactionService.listTransactions(page, size));
+        return ApiResponse.ok(transactionService.listTransactions(keyword, page, size));
     }
 }

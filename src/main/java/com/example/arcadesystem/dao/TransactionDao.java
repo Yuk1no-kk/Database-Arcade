@@ -1,17 +1,10 @@
 package com.example.arcadesystem.dao;
 
-import com.example.arcadesystem.model.TokenTransaction;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +18,7 @@ public class TransactionDao {
     }
 
     public void saveTransaction(int memberId, BigDecimal amount, int tokens) {
-        jdbc.update("INSERT INTO token_transactions (member_id, amount_paid, tokens_purchased) VALUES (?, ?, ?)",
+        jdbc.update("INSERT INTO token_transactions (member_id, package_id, amount_paid, tokens_purchased) VALUES (?, NULL, ?, ?)",
                 memberId, amount, tokens);
     }
 
@@ -44,8 +37,8 @@ public class TransactionDao {
                 memberId, machineId, tokens);
     }
 
-    public List<Map<String, Object>> findUnifiedRecords(int page, int size) {
-        String sql = """
+    public List<Map<String, Object>> findUnifiedRecords(String keyword, int page, int size) {
+        StringBuilder sql = new StringBuilder("""
                 SELECT * FROM (
                     SELECT t.transaction_id AS id, t.member_id, m.name AS member_name,
                            t.amount_paid AS amount, t.tokens_purchased AS tokens,
@@ -60,15 +53,41 @@ public class TransactionDao {
                     JOIN members m ON g.member_id = m.member_id
                     JOIN machines mc ON g.machine_id = mc.machine_id
                 ) combined
-                ORDER BY time DESC
-                LIMIT ? OFFSET ?
-                """;
-        return jdbc.queryForList(sql, size, (page - 1) * size);
+                """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.isBlank()) {
+            sql.append(" WHERE member_name LIKE ? ");
+            params.add("%" + keyword + "%");
+        }
+
+        sql.append(" ORDER BY time DESC LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add((page - 1) * size);
+
+        return jdbc.queryForList(sql.toString(), params.toArray());
     }
 
-    public int countUnifiedRecords() {
-        Integer recharge = jdbc.queryForObject("SELECT COUNT(*) FROM token_transactions", Integer.class);
-        Integer consume = jdbc.queryForObject("SELECT COUNT(*) FROM game_sessions", Integer.class);
-        return (recharge != null ? recharge : 0) + (consume != null ? consume : 0);
+    public int countUnifiedRecords(String keyword) {
+        String sql = """
+                SELECT COUNT(*) FROM (
+                    SELECT m.name AS member_name FROM token_transactions t
+                    JOIN members m ON t.member_id = m.member_id
+                    UNION ALL
+                    SELECT m.name AS member_name FROM game_sessions g
+                    JOIN members m ON g.member_id = m.member_id
+                ) combined
+                """;
+
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.isBlank()) {
+            sql += " WHERE member_name LIKE ? ";
+            params.add("%" + keyword + "%");
+        }
+
+        Integer result = jdbc.queryForObject(sql, Integer.class, params.toArray());
+        return result != null ? result : 0;
     }
 }

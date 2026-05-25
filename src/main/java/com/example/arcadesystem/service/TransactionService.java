@@ -62,9 +62,9 @@ public class TransactionService {
         transactionDao.recordGameSession(memberId, machineId, tokens);
     }
 
-    public Map<String, Object> listTransactions(int page, int size) {
-        List<Map<String, Object>> list = transactionDao.findUnifiedRecords(page, size);
-        int total = transactionDao.countUnifiedRecords();
+    public Map<String, Object> listTransactions(String keyword, int page, int size) {
+        List<Map<String, Object>> list = transactionDao.findUnifiedRecords(keyword, page, size);
+        int total = transactionDao.countUnifiedRecords(keyword);
         return Map.of("list", list, "total", total);
     }
 }

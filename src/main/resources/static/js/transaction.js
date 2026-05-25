@@ -1,8 +1,10 @@
 const TransactionModule = {
     page: 1,
     size: 10,
+    keyword: '',
 
     init() {
+        this.searchInput = document.getElementById('transaction-search');
         this.tableBody = document.querySelector('#transaction-table tbody');
         this.pageInfo = document.querySelector('#tab-transactions .page-info');
         this.prevBtn = document.querySelector('#tab-transactions .page-prev');
@@ -11,13 +13,19 @@ const TransactionModule = {
         document.getElementById('recharge-btn').addEventListener('click', () => this.showRechargeForm());
         document.getElementById('consume-btn').addEventListener('click', () => this.showConsumeForm());
 
+        this.searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { this.keyword = e.target.value; this.page = 1; this.load(); }
+        });
+
         this.prevBtn.addEventListener('click', () => { if (this.page > 1) { this.page--; this.load(); } });
         this.nextBtn.addEventListener('click', () => { this.page++; this.load(); });
     },
 
     async load() {
         try {
-            const data = await API.get('/api/transactions', { page: this.page, size: this.size });
+            const params = { page: this.page, size: this.size };
+            if (this.keyword) params.keyword = this.keyword;
+            const data = await API.get('/api/transactions', params);
             this.render(data.list, data.total);
         } catch (e) { /* toast already shown */ }
     },
