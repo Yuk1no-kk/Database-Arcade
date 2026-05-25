@@ -1,12 +1,10 @@
 package com.example.arcadesystem.controller;
 
 import com.example.arcadesystem.dto.ApiResponse;
-import com.example.arcadesystem.model.TokenPackage;
-import com.example.arcadesystem.model.TokenTransaction;
 import com.example.arcadesystem.service.TransactionService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
@@ -19,16 +17,12 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @GetMapping("/packages")
-    public ApiResponse<List<TokenPackage>> listPackages() {
-        return ApiResponse.ok(transactionService.getPackages());
-    }
-
     @PostMapping("/transactions/recharge")
-    public ApiResponse<TokenTransaction> recharge(@RequestBody Map<String, Integer> body) {
-        int memberId = body.get("memberId");
-        int packageId = body.get("packageId");
-        return ApiResponse.ok("充值成功", transactionService.recharge(memberId, packageId));
+    public ApiResponse<Void> recharge(@RequestBody Map<String, Object> body) {
+        int memberId = ((Number) body.get("memberId")).intValue();
+        BigDecimal amount = new BigDecimal(body.get("amount").toString());
+        transactionService.recharge(memberId, amount);
+        return ApiResponse.ok("充值成功", null);
     }
 
     @PostMapping("/transactions/consume")

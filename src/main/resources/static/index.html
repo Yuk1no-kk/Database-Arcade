@@ -10,12 +10,17 @@
     <div class="container">
         <header>
             <h1>游戏厅管理系统</h1>
+            <div class="header-right">
+                <span id="current-user"></span>
+                <button id="logout-btn" class="btn btn-sm">退出</button>
+            </div>
         </header>
 
         <nav class="tabs">
             <button class="tab-btn active" data-tab="members">会员管理</button>
             <button class="tab-btn" data-tab="machines">游戏机管理</button>
             <button class="tab-btn" data-tab="transactions">充值消费</button>
+            <button class="tab-btn admin-only hidden" data-tab="staff">员工管理</button>
         </nav>
 
         <!-- 会员管理 Tab -->
@@ -84,10 +89,34 @@
                     <thead>
                         <tr>
                             <th>会员</th>
-                            <th>套餐</th>
                             <th>金额</th>
                             <th>代币数</th>
+                            <th>机器</th>
                             <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <span class="page-info"></span>
+                <button class="btn btn-sm page-prev">上一页</button>
+                <button class="btn btn-sm page-next">下一页</button>
+            </div>
+        </section>
+
+        <!-- 员工管理 Tab (admin only) -->
+        <section id="tab-staff" class="tab-content">
+            <div class="toolbar">
+                <input type="text" id="staff-search" class="search-input" placeholder="搜索用户名...">
+            </div>
+            <div class="table-wrapper">
+                <table id="staff-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="username">用户名 <span class="sort-icon"></span></th>
+                            <th>身份</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -120,6 +149,7 @@
     <script src="js/member.js"></script>
     <script src="js/machine.js"></script>
     <script src="js/transaction.js"></script>
+    <script src="js/staff.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

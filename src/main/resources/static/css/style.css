@@ -14,10 +14,20 @@ body {
 }
 
 header {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 24px 0;
     color: #1a1a2e;
     font-size: 14px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #888;
 }
 
 /* Tabs */
@@ -313,3 +323,91 @@ tbody tr:hover { background: #f5f7fa; }
     from { top: 0; opacity: 0; }
     to { top: 24px; opacity: 1; }
 }
+
+/* ===== Login Page ===== */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.login-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px 36px;
+    width: 400px;
+    max-width: 95vw;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.login-card h1 {
+    text-align: center;
+    font-size: 22px;
+    color: #1a1a2e;
+    margin-bottom: 28px;
+}
+
+.auth-form h2 {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.auth-form .form-group {
+    margin-bottom: 14px;
+}
+
+.auth-form input,
+.auth-form select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+    border-color: #409eff;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 11px;
+    font-size: 15px;
+    margin-top: 6px;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #999;
+}
+
+.auth-switch a {
+    color: #409eff;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.auth-error {
+    background: #fef0f0;
+    color: #f56c6c;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Login page hidden utility overrides modal */
+.login-container .hidden { display: none; }

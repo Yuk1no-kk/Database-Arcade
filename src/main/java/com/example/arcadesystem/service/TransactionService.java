@@ -7,11 +7,10 @@ import com.example.arcadesystem.exception.BusinessException;
 import com.example.arcadesystem.exception.NotFoundException;
 import com.example.arcadesystem.model.Machine;
 import com.example.arcadesystem.model.Member;
-import com.example.arcadesystem.model.TokenPackage;
-import com.example.arcadesystem.model.TokenTransaction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -28,30 +27,18 @@ public class TransactionService {
         this.machineDao = machineDao;
     }
 
-    public List<TokenPackage> getPackages() {
-        return transactionDao.findAllPackages();
-    }
-
     @Transactional
-    public TokenTransaction recharge(int memberId, int packageId) {
+    public void recharge(int memberId, BigDecimal amount) {
         Member member = memberDao.findById(memberId);
         if (member == null) {
             throw new NotFoundException("会员不存在");
         }
-        TokenPackage pkg = transactionDao.findPackageById(packageId);
-        if (pkg == null) {
-            throw new NotFoundException("套餐不存在");
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("金额必须大于0");
         }
-
-        TokenTransaction tx = new TokenTransaction();
-        tx.setMemberId(memberId);
-        tx.setPackageId(packageId);
-        tx.setAmountPaid(pkg.getPrice());
-        tx.setTokensPurchased(pkg.getTokenCount());
-        transactionDao.saveTransaction(tx);
-
-        transactionDao.addTokens(memberId, pkg.getTokenCount(), pkg.getPrice());
-        return tx;
+        int tokens = amount.intValue() * 10;
+        transactionDao.saveTransaction(memberId, amount, tokens);
+        transactionDao.addTokens(memberId, tokens, amount);
     }
 
     @Transactional
@@ -76,8 +63,8 @@ public class TransactionService {
     }
 
     public Map<String, Object> listTransactions(int page, int size) {
-        List<TokenTransaction> list = transactionDao.findTransactions(page, size);
-        int total = transactionDao.countTransactions();
+        List<Map<String, Object>> list = transactionDao.findUnifiedRecords(page, size);
+        int total = transactionDao.countUnifiedRecords();
         return Map.of("list", list, "total", total);
     }
 }

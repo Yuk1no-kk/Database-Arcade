@@ -1,6 +1,5 @@
 package com.example.arcadesystem.dao;
 
-import com.example.arcadesystem.model.TokenPackage;
 import com.example.arcadesystem.model.TokenTransaction;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,9 +7,13 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class TransactionDao {
@@ -21,52 +24,12 @@ public class TransactionDao {
         this.jdbc = jdbc;
     }
 
-    private final RowMapper<TokenPackage> packageRowMapper = (rs, rowNum) -> {
-        TokenPackage p = new TokenPackage();
-        p.setPackageId(rs.getInt("package_id"));
-        p.setPackageName(rs.getString("package_name"));
-        p.setPrice(rs.getBigDecimal("price"));
-        p.setTokenCount(rs.getInt("token_count"));
-        return p;
-    };
-
-    private final RowMapper<TokenTransaction> transRowMapper = (rs, rowNum) -> {
-        TokenTransaction t = new TokenTransaction();
-        t.setTransactionId(rs.getInt("transaction_id"));
-        t.setMemberId(rs.getInt("member_id"));
-        t.setPackageId(rs.getInt("package_id"));
-        t.setTransactionDate(rs.getTimestamp("transaction_date").toLocalDateTime());
-        t.setAmountPaid(rs.getBigDecimal("amount_paid"));
-        t.setTokensPurchased(rs.getInt("tokens_purchased"));
-        return t;
-    };
-
-    public List<TokenPackage> findAllPackages() {
-        return jdbc.query("SELECT * FROM token_packages", packageRowMapper);
+    public void saveTransaction(int memberId, BigDecimal amount, int tokens) {
+        jdbc.update("INSERT INTO token_transactions (member_id, amount_paid, tokens_purchased) VALUES (?, ?, ?)",
+                memberId, amount, tokens);
     }
 
-    public TokenPackage findPackageById(int id) {
-        List<TokenPackage> list = jdbc.query("SELECT * FROM token_packages WHERE package_id = ?", packageRowMapper, id);
-        return list.isEmpty() ? null : list.get(0);
-    }
-
-    public TokenTransaction saveTransaction(TokenTransaction tx) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbc.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO token_transactions (member_id, package_id, amount_paid, tokens_purchased) VALUES (?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, tx.getMemberId());
-            ps.setInt(2, tx.getPackageId());
-            ps.setBigDecimal(3, tx.getAmountPaid());
-            ps.setInt(4, tx.getTokensPurchased());
-            return ps;
-        }, keyHolder);
-        tx.setTransactionId(keyHolder.getKey().intValue());
-        return tx;
-    }
-
-    public void addTokens(int memberId, int tokens, java.math.BigDecimal amount) {
+    public void addTokens(int memberId, int tokens, BigDecimal amount) {
         jdbc.update("UPDATE members SET token_balance = token_balance + ?, accumulated_spend = accumulated_spend + ? WHERE member_id = ?",
                 tokens, amount, memberId);
     }
@@ -81,31 +44,31 @@ public class TransactionDao {
                 memberId, machineId, tokens);
     }
 
-    public List<TokenTransaction> findTransactions(int page, int size) {
+    public List<Map<String, Object>> findUnifiedRecords(int page, int size) {
         String sql = """
-                SELECT t.*, m.name AS member_name, p.package_name
-                FROM token_transactions t
-                LEFT JOIN members m ON t.member_id = m.member_id
-                LEFT JOIN token_packages p ON t.package_id = p.package_id
-                ORDER BY t.transaction_date DESC
+                SELECT * FROM (
+                    SELECT t.transaction_id AS id, t.member_id, m.name AS member_name,
+                           t.amount_paid AS amount, t.tokens_purchased AS tokens,
+                           NULL AS machine_name, t.transaction_date AS time, 'recharge' AS type
+                    FROM token_transactions t
+                    JOIN members m ON t.member_id = m.member_id
+                    UNION ALL
+                    SELECT g.session_id AS id, g.member_id, m.name AS member_name,
+                           NULL AS amount, -g.token_consumed AS tokens,
+                           mc.name AS machine_name, g.start_time AS time, 'consume' AS type
+                    FROM game_sessions g
+                    JOIN members m ON g.member_id = m.member_id
+                    JOIN machines mc ON g.machine_id = mc.machine_id
+                ) combined
+                ORDER BY time DESC
                 LIMIT ? OFFSET ?
                 """;
-        return jdbc.query(sql, (rs, rowNum) -> {
-            TokenTransaction t = new TokenTransaction();
-            t.setTransactionId(rs.getInt("transaction_id"));
-            t.setMemberId(rs.getInt("member_id"));
-            t.setPackageId(rs.getInt("package_id"));
-            t.setTransactionDate(rs.getTimestamp("transaction_date").toLocalDateTime());
-            t.setAmountPaid(rs.getBigDecimal("amount_paid"));
-            t.setTokensPurchased(rs.getInt("tokens_purchased"));
-            t.setMemberName(rs.getString("member_name"));
-            t.setPackageName(rs.getString("package_name"));
-            return t;
-        }, size, (page - 1) * size);
+        return jdbc.queryForList(sql, size, (page - 1) * size);
     }
 
-    public int countTransactions() {
-        Integer result = jdbc.queryForObject("SELECT COUNT(*) FROM token_transactions", Integer.class);
-        return result != null ? result : 0;
+    public int countUnifiedRecords() {
+        Integer recharge = jdbc.queryForObject("SELECT COUNT(*) FROM token_transactions", Integer.class);
+        Integer consume = jdbc.queryForObject("SELECT COUNT(*) FROM game_sessions", Integer.class);
+        return (recharge != null ? recharge : 0) + (consume != null ? consume : 0);
     }
 }

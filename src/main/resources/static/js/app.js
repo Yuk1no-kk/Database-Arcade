@@ -1,3 +1,21 @@
+// Login check
+const user = JSON.parse(sessionStorage.getItem('user'));
+if (!user) {
+    window.location.href = '/login.html';
+}
+
+document.getElementById('current-user').textContent = `${user.name || user.username} (${user.permissionLevel === 'admin' ? '管理员' : '员工'})`;
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+    sessionStorage.clear();
+    window.location.href = '/login.html';
+});
+
+// Show staff tab for admin
+if (user.permissionLevel === 'admin') {
+    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+}
+
 // Tab switching
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -6,10 +24,10 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.add('active');
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
 
-        // reload current tab data
         if (btn.dataset.tab === 'members') MemberModule.load();
         else if (btn.dataset.tab === 'machines') MachineModule.load();
         else if (btn.dataset.tab === 'transactions') TransactionModule.load();
+        else if (btn.dataset.tab === 'staff') StaffModule.load();
     });
 });
 
@@ -41,7 +59,6 @@ document.getElementById('modal-submit').addEventListener('click', async () => {
         try {
             await Modal.submitHandler();
         } catch (e) {
-            // error toast already shown in api.js
             document.getElementById('modal-submit').disabled = false;
         }
         document.getElementById('modal-submit').disabled = false;
@@ -52,6 +69,9 @@ document.getElementById('modal-submit').addEventListener('click', async () => {
 MemberModule.init();
 MachineModule.init();
 TransactionModule.init();
+if (user.permissionLevel === 'admin') {
+    StaffModule.init(user.staffId);
+}
 
 // Load first tab on page load
 MemberModule.load();

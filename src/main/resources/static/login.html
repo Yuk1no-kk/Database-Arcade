@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏厅管理系统 - 登录</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1>游戏厅管理系统</h1>
+
+            <!-- 登录表单 -->
+            <form id="login-form" class="auth-form">
+                <h2>登录</h2>
+                <div class="form-group">
+                    <input type="text" id="login-username" placeholder="用户名" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="密码" autocomplete="current-password">
+                </div>
+                <div id="login-error" class="auth-error hidden"></div>
+                <button type="submit" class="btn btn-primary login-btn">登 录</button>
+                <p class="auth-switch">还没有账号？<a href="#" id="show-register">立即注册</a></p>
+            </form>
+
+            <!-- 注册表单（默认隐藏） -->
+            <form id="register-form" class="auth-form hidden">
+                <h2>注册</h2>
+                <div class="form-group">
+                    <input type="text" id="reg-username" placeholder="用户名" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="reg-password" placeholder="密码" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <select id="reg-role">
+                        <option value="">选择身份</option>
+                        <option value="admin">管理员 (admin)</option>
+                        <option value="worker">员工 (worker)</option>
+                    </select>
+                </div>
+                <div id="register-error" class="auth-error hidden"></div>
+                <button type="submit" class="btn btn-primary login-btn">注 册</button>
+                <p class="auth-switch">已有账号？<a href="#" id="show-login">返回登录</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // 切换登录/注册表单
+        document.getElementById('show-register').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('register-error').classList.add('hidden');
+        });
+
+        document.getElementById('show-login').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('register-error').classList.add('hidden');
+            document.getElementById('login-error').classList.add('hidden');
+        });
+
+        // 登录
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!username || !password) {
+                document.getElementById('login-error').textContent = '请填写用户名和密码';
+                document.getElementById('login-error').classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const json = await res.json();
+                if (json.code !== 200) {
+                    document.getElementById('login-error').textContent = json.message;
+                    document.getElementById('login-error').classList.remove('hidden');
+                    return;
+                }
+                sessionStorage.setItem('user', JSON.stringify(json.data));
+                window.location.href = '/index.html';
+            } catch (err) {
+                document.getElementById('login-error').textContent = '网络错误，请重试';
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+
+        // 注册
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const permissionLevel = document.getElementById('reg-role').value;
+
+            if (!username || !password) {
+                document.getElementById('register-error').textContent = '请填写用户名和密码';
+                document.getElementById('register-error').classList.remove('hidden');
+                return;
+            }
+            if (!permissionLevel) {
+                document.getElementById('register-error').textContent = '请选择身份';
+                document.getElementById('register-error').classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, permissionLevel })
+                });
+                const json = await res.json();
+                if (json.code !== 200) {
+                    document.getElementById('register-error').textContent = json.message;
+                    document.getElementById('register-error').classList.remove('hidden');
+                    return;
+                }
+                // 注册成功，切到登录
+                document.getElementById('register-form').classList.add('hidden');
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-error').classList.add('hidden');
+                showToast('注册成功，请登录', 'success');
+            } catch (err) {
+                document.getElementById('register-error').textContent = '网络错误，请重试';
+                document.getElementById('register-error').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

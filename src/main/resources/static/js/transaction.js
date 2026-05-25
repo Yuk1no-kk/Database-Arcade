@@ -27,15 +27,20 @@ const TransactionModule = {
         if (!list || list.length === 0) {
             this.tableBody.innerHTML = '<tr><td colspan="5" class="empty-row">暂无交易记录</td></tr>';
         } else {
-            list.forEach(t => {
+            list.forEach(row => {
                 const tr = document.createElement('tr');
-                const date = t.transactionDate ? new Date(t.transactionDate).toLocaleString('zh-CN') : '-';
+                const time = row.time ? new Date(row.time).toLocaleString('zh-CN') : '-';
+                const isRecharge = row.type === 'recharge';
+                const tokensDisplay = isRecharge ? `+${row.tokens}` : `${row.tokens}`;
+                const amountDisplay = row.amount != null ? `￥${parseFloat(row.amount).toFixed(2)}` : '-';
+                const machineDisplay = row.machine_name || '-';
+
                 tr.innerHTML = `
-                    <td>${escHtml(t.memberName || '-')}</td>
-                    <td>${escHtml(t.packageName || '-')}</td>
-                    <td>￥${(t.amountPaid || 0).toFixed(2)}</td>
-                    <td>${t.tokensPurchased}</td>
-                    <td>${date}</td>`;
+                    <td>${escHtml(row.member_name)}</td>
+                    <td>${amountDisplay}</td>
+                    <td>${tokensDisplay}</td>
+                    <td>${machineDisplay}</td>
+                    <td>${time}</td>`;
                 this.tableBody.appendChild(tr);
             });
         }
@@ -46,9 +51,8 @@ const TransactionModule = {
     },
 
     async showRechargeForm() {
-        let packages, members;
+        let members;
         try {
-            packages = await API.get('/api/packages');
             members = await API.get('/api/members', { size: 999 });
         } catch (e) { return; }
 
@@ -58,7 +62,6 @@ const TransactionModule = {
         }
 
         const memberOpts = members.list.map(m => `<option value="${m.memberId}">${escHtml(m.name)} (余额:${m.tokenBalance})</option>`).join('');
-        const pkgOpts = packages.map(p => `<option value="${p.packageId}">${escHtml(p.packageName)} - ￥${p.price} / ${p.tokenCount}币</option>`).join('');
 
         document.getElementById('modal-title').textContent = '充值';
         document.getElementById('modal-body').innerHTML = `
@@ -67,17 +70,20 @@ const TransactionModule = {
                 <select id="form-member">${memberOpts}</select>
             </div>
             <div class="form-group">
-                <label>选择套餐</label>
-                <select id="form-package">${pkgOpts}</select>
+                <label>充值金额 (￥) <span style="color:#888; font-size:12px">1元 = 10代币</span></label>
+                <input id="form-amount" type="number" min="1" step="0.01" placeholder="输入金额">
             </div>`;
 
         Modal.show(async () => {
             const memberId = parseInt(document.getElementById('form-member').value);
-            const packageId = parseInt(document.getElementById('form-package').value);
-            await API.post('/api/transactions/recharge', { memberId, packageId });
+            const amount = parseFloat(document.getElementById('form-amount').value);
+            if (!amount || amount <= 0) {
+                alert('请输入有效金额');
+                throw new Error('invalid amount');
+            }
+            await API.post('/api/transactions/recharge', { memberId, amount });
             Modal.hide();
             this.load();
-            // also refresh member tab if visible
             if (typeof MemberModule !== 'undefined') MemberModule.load();
         });
     },
