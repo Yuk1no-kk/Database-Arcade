@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏厅管理系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>游戏厅管理系统</h1>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="members">会员管理</button>
+            <button class="tab-btn" data-tab="machines">游戏机管理</button>
+            <button class="tab-btn" data-tab="transactions">充值消费</button>
+        </nav>
+
+        <!-- 会员管理 Tab -->
+        <section id="tab-members" class="tab-content active">
+            <div class="toolbar">
+                <input type="text" id="member-search" class="search-input" placeholder="搜索姓名或电话...">
+                <button id="member-add-btn" class="btn btn-primary">+ 新增会员</button>
+            </div>
+            <div class="table-wrapper">
+                <table id="member-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="name">姓名 <span class="sort-icon"></span></th>
+                            <th data-sort="phone">电话</th>
+                            <th data-sort="vipLevel">VIP等级 <span class="sort-icon"></span></th>
+                            <th data-sort="tokenBalance">代币余额 <span class="sort-icon"></span></th>
+                            <th data-sort="accumulatedSpend">累计消费 <span class="sort-icon"></span></th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <span class="page-info"></span>
+                <button class="btn btn-sm page-prev">上一页</button>
+                <button class="btn btn-sm page-next">下一页</button>
+            </div>
+        </section>
+
+        <!-- 游戏机管理 Tab -->
+        <section id="tab-machines" class="tab-content">
+            <div class="toolbar">
+                <input type="text" id="machine-search" class="search-input" placeholder="搜索名称或类型...">
+                <button id="machine-add-btn" class="btn btn-primary">+ 新增游戏机</button>
+            </div>
+            <div class="table-wrapper">
+                <table id="machine-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="name">名称 <span class="sort-icon"></span></th>
+                            <th data-sort="type">类型 <span class="sort-icon"></span></th>
+                            <th data-sort="tokensPerGame">单次耗币 <span class="sort-icon"></span></th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <span class="page-info"></span>
+                <button class="btn btn-sm page-prev">上一页</button>
+                <button class="btn btn-sm page-next">下一页</button>
+            </div>
+        </section>
+
+        <!-- 充值消费 Tab -->
+        <section id="tab-transactions" class="tab-content">
+            <div class="toolbar">
+                <button id="recharge-btn" class="btn btn-success">+ 充值</button>
+                <button id="consume-btn" class="btn btn-warning">- 消费扣币</button>
+            </div>
+            <div class="table-wrapper">
+                <table id="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>会员</th>
+                            <th>套餐</th>
+                            <th>金额</th>
+                            <th>代币数</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <span class="page-info"></span>
+                <button class="btn btn-sm page-prev">上一页</button>
+                <button class="btn btn-sm page-next">下一页</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title"></h3>
+                <button id="modal-close" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer">
+                <button id="modal-cancel" class="btn">取消</button>
+                <button id="modal-submit" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/member.js"></script>
+    <script src="js/machine.js"></script>
+    <script src="js/transaction.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

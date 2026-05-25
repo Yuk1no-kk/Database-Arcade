@@ -1,0 +1,49 @@
+package com.example.arcadesystem.controller;
+
+import com.example.arcadesystem.dto.ApiResponse;
+import com.example.arcadesystem.model.TokenPackage;
+import com.example.arcadesystem.model.TokenTransaction;
+import com.example.arcadesystem.service.TransactionService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api")
+public class TransactionController {
+
+    private final TransactionService transactionService;
+
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+
+    @GetMapping("/packages")
+    public ApiResponse<List<TokenPackage>> listPackages() {
+        return ApiResponse.ok(transactionService.getPackages());
+    }
+
+    @PostMapping("/transactions/recharge")
+    public ApiResponse<TokenTransaction> recharge(@RequestBody Map<String, Integer> body) {
+        int memberId = body.get("memberId");
+        int packageId = body.get("packageId");
+        return ApiResponse.ok("充值成功", transactionService.recharge(memberId, packageId));
+    }
+
+    @PostMapping("/transactions/consume")
+    public ApiResponse<Void> consume(@RequestBody Map<String, Integer> body) {
+        int memberId = body.get("memberId");
+        int machineId = body.get("machineId");
+        int tokens = body.get("tokens");
+        transactionService.consume(memberId, machineId, tokens);
+        return ApiResponse.ok("消费成功", null);
+    }
+
+    @GetMapping("/transactions")
+    public ApiResponse<Map<String, Object>> listTransactions(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.ok(transactionService.listTransactions(page, size));
+    }
+}
