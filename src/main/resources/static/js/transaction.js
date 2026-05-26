@@ -33,7 +33,7 @@ const TransactionModule = {
     render(list, total) {
         this.tableBody.innerHTML = '';
         if (!list || list.length === 0) {
-            this.tableBody.innerHTML = '<tr><td colspan="5" class="empty-row">暂无交易记录</td></tr>';
+            this.tableBody.innerHTML = '<tr><td colspan="5" class="empty-row">No transactions</td></tr>';
         } else {
             list.forEach(row => {
                 const tr = document.createElement('tr');
@@ -53,7 +53,7 @@ const TransactionModule = {
             });
         }
 
-        this.pageInfo.textContent = `共 ${total} 条，第 ${this.page} 页`;
+        this.pageInfo.textContent = `Total ${total}, Page ${this.page}`;
         this.prevBtn.disabled = this.page <= 1;
         this.nextBtn.disabled = this.page * this.size >= total;
     },
@@ -65,28 +65,28 @@ const TransactionModule = {
         } catch (e) { return; }
 
         if (!members.list || members.list.length === 0) {
-            alert('暂无会员，请先新增会员');
+            alert('No members. Please add a member first.');
             return;
         }
 
-        const memberOpts = members.list.map(m => `<option value="${m.memberId}">${escHtml(m.name)} (余额:${m.tokenBalance})</option>`).join('');
+        const memberOpts = members.list.map(m => `<option value="${m.memberId}">${escHtml(m.name)} (Balance:${m.tokenBalance})</option>`).join('');
 
-        document.getElementById('modal-title').textContent = '充值';
+        document.getElementById('modal-title').textContent = 'Recharge';
         document.getElementById('modal-body').innerHTML = `
             <div class="form-group">
-                <label>选择会员</label>
+                <label>Select Member</label>
                 <select id="form-member">${memberOpts}</select>
             </div>
             <div class="form-group">
-                <label>充值金额 (￥) <span style="color:#888; font-size:12px">1元 = 10代币</span></label>
-                <input id="form-amount" type="number" min="1" step="0.01" placeholder="输入金额">
+                <label>Amount (￥) <span style="color:#888; font-size:12px">1 RMB = 10 tokens</span></label>
+                <input id="form-amount" type="number" min="1" step="0.01" placeholder="Enter amount">
             </div>`;
 
         Modal.show(async () => {
             const memberId = parseInt(document.getElementById('form-member').value);
             const amount = parseFloat(document.getElementById('form-amount').value);
             if (!amount || amount <= 0) {
-                alert('请输入有效金额');
+                alert('Please enter a valid amount');
                 throw new Error('invalid amount');
             }
             await API.post('/api/transactions/recharge', { memberId, amount });
@@ -104,29 +104,29 @@ const TransactionModule = {
         } catch (e) { return; }
 
         if (!members.list || members.list.length === 0) {
-            alert('暂无会员，请先新增会员');
+            alert('No members. Please add a member first.');
             return;
         }
         if (!machines.list || machines.list.length === 0) {
-            alert('暂无可用游戏机，请先新增游戏机');
+            alert('No machines. Please add a machine first.');
             return;
         }
 
-        const memberOpts = members.list.map(m => `<option value="${m.memberId}">${escHtml(m.name)} (余额:${m.tokenBalance})</option>`).join('');
-        const machineOpts = machines.list.map(m => `<option value="${m.machineId}">${escHtml(m.name)} (${m.tokensPerGame}币/次)</option>`).join('');
+        const memberOpts = members.list.map(m => `<option value="${m.memberId}">${escHtml(m.name)} (Balance:${m.tokenBalance})</option>`).join('');
+        const machineOpts = machines.list.map(m => `<option value="${m.machineId}">${escHtml(m.name)} (${m.tokensPerGame} tokens/game)</option>`).join('');
 
-        document.getElementById('modal-title').textContent = '消费扣币';
+        document.getElementById('modal-title').textContent = 'Consume Tokens';
         document.getElementById('modal-body').innerHTML = `
             <div class="form-group">
-                <label>选择会员</label>
+                <label>Select Member</label>
                 <select id="form-member">${memberOpts}</select>
             </div>
             <div class="form-group">
-                <label>选择游戏机</label>
+                <label>Select Machine</label>
                 <select id="form-machine">${machineOpts}</select>
             </div>
             <div class="form-group">
-                <label>消耗代币数</label>
+                <label>Token Count</label>
                 <input id="form-tokens" type="number" value="1" min="1">
             </div>`;
 

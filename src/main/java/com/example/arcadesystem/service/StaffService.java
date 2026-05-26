@@ -20,30 +20,30 @@ public class StaffService {
 
     public Staff login(String username, String password) {
         if (username == null || username.isBlank()) {
-            throw new BusinessException("用户名不能为空");
+            throw new BusinessException("Username is required");
         }
         if (password == null || password.isBlank()) {
-            throw new BusinessException("密码不能为空");
+            throw new BusinessException("Password is required");
         }
         Staff staff = staffDao.findByUsernameAndPassword(username, password);
         if (staff == null) {
-            throw new BusinessException(401, "用户名或密码错误");
+            throw new BusinessException(401, "Invalid username or password");
         }
         return staff;
     }
 
     public Staff register(String username, String password, String permissionLevel) {
         if (username == null || username.isBlank()) {
-            throw new BusinessException("用户名不能为空");
+            throw new BusinessException("Username is required");
         }
         if (password == null || password.isBlank()) {
-            throw new BusinessException("密码不能为空");
+            throw new BusinessException("Password is required");
         }
         if (!"admin".equals(permissionLevel) && !"worker".equals(permissionLevel)) {
-            throw new BusinessException("身份只能是 admin 或 worker");
+            throw new BusinessException("Role must be admin or worker");
         }
         if (staffDao.existsByUsername(username)) {
-            throw new BusinessException("用户名已存在");
+            throw new BusinessException("Username already exists");
         }
         Staff staff = new Staff();
         staff.setUsername(username);
@@ -64,7 +64,7 @@ public class StaffService {
     public Staff getById(int id) {
         Staff staff = staffDao.findById(id);
         if (staff == null) {
-            throw new NotFoundException("员工不存在");
+            throw new NotFoundException("Staff not found");
         }
         return staff;
     }
@@ -72,7 +72,7 @@ public class StaffService {
     public void updatePermission(int id, String permissionLevel) {
         Staff existing = getById(id);
         if (!"admin".equals(permissionLevel) && !"worker".equals(permissionLevel)) {
-            throw new BusinessException("身份只能是 admin 或 worker");
+            throw new BusinessException("Role must be admin or worker");
         }
         staffDao.updatePermission(id, permissionLevel);
     }

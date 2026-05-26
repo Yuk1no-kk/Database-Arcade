@@ -22,7 +22,7 @@ public class TransactionController {
         int memberId = ((Number) body.get("memberId")).intValue();
         BigDecimal amount = new BigDecimal(body.get("amount").toString());
         transactionService.recharge(memberId, amount);
-        return ApiResponse.ok("充值成功", null);
+        return ApiResponse.ok("Recharge successful", null);
     }
 
     @PostMapping("/transactions/consume")
@@ -31,7 +31,7 @@ public class TransactionController {
         int machineId = body.get("machineId");
         int tokens = body.get("tokens");
         transactionService.consume(memberId, machineId, tokens);
-        return ApiResponse.ok("消费成功", null);
+        return ApiResponse.ok("Consume successful", null);
     }
 
     @GetMapping("/transactions")

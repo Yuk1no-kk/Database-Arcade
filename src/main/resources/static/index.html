@@ -1,44 +1,44 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>游戏厅管理系统</title>
+    <title>Arcade Management System</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>游戏厅管理系统</h1>
+            <h1>Arcade Management System</h1>
             <div class="header-right">
                 <span id="current-user"></span>
-                <button id="logout-btn" class="btn btn-sm">退出</button>
+                <button id="logout-btn" class="btn btn-sm">Logout</button>
             </div>
         </header>
 
         <nav class="tabs">
-            <button class="tab-btn active" data-tab="members">会员管理</button>
-            <button class="tab-btn" data-tab="machines">游戏机管理</button>
-            <button class="tab-btn" data-tab="transactions">充值消费</button>
-            <button class="tab-btn admin-only hidden" data-tab="staff">员工管理</button>
+            <button class="tab-btn active" data-tab="members">Members</button>
+            <button class="tab-btn" data-tab="machines">Machines</button>
+            <button class="tab-btn" data-tab="transactions">Transactions</button>
+            <button class="tab-btn admin-only hidden" data-tab="staff">Staff</button>
         </nav>
 
-        <!-- 会员管理 Tab -->
+        <!-- Members Tab -->
         <section id="tab-members" class="tab-content active">
             <div class="toolbar">
-                <input type="text" id="member-search" class="search-input" placeholder="搜索姓名或电话...">
-                <button id="member-add-btn" class="btn btn-primary">+ 新增会员</button>
+                <input type="text" id="member-search" class="search-input" placeholder="Search name or phone...">
+                <button id="member-add-btn" class="btn btn-primary">+ Add Member</button>
             </div>
             <div class="table-wrapper">
                 <table id="member-table">
                     <thead>
                         <tr>
-                            <th data-sort="name">姓名 <span class="sort-icon"></span></th>
-                            <th data-sort="phone">电话</th>
-                            <th data-sort="vipLevel">VIP等级 <span class="sort-icon"></span></th>
-                            <th data-sort="tokenBalance">代币余额 <span class="sort-icon"></span></th>
-                            <th data-sort="accumulatedSpend">累计消费 <span class="sort-icon"></span></th>
-                            <th>操作</th>
+                            <th data-sort="name">Name <span class="sort-icon"></span></th>
+                            <th data-sort="phone">Phone</th>
+                            <th data-sort="vipLevel">VIP Level <span class="sort-icon"></span></th>
+                            <th data-sort="tokenBalance">Token Balance <span class="sort-icon"></span></th>
+                            <th data-sort="accumulatedSpend">Total Spent <span class="sort-icon"></span></th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -46,26 +46,26 @@
             </div>
             <div class="pagination">
                 <span class="page-info"></span>
-                <button class="btn btn-sm page-prev">上一页</button>
-                <button class="btn btn-sm page-next">下一页</button>
+                <button class="btn btn-sm page-prev">Prev</button>
+                <button class="btn btn-sm page-next">Next</button>
             </div>
         </section>
 
-        <!-- 游戏机管理 Tab -->
+        <!-- Machines Tab -->
         <section id="tab-machines" class="tab-content">
             <div class="toolbar">
-                <input type="text" id="machine-search" class="search-input" placeholder="搜索名称或类型...">
-                <button id="machine-add-btn" class="btn btn-primary">+ 新增游戏机</button>
+                <input type="text" id="machine-search" class="search-input" placeholder="Search name or type...">
+                <button id="machine-add-btn" class="btn btn-primary">+ Add Machine</button>
             </div>
             <div class="table-wrapper">
                 <table id="machine-table">
                     <thead>
                         <tr>
-                            <th data-sort="name">名称 <span class="sort-icon"></span></th>
-                            <th data-sort="type">类型 <span class="sort-icon"></span></th>
-                            <th data-sort="tokensPerGame">单次耗币 <span class="sort-icon"></span></th>
-                            <th>状态</th>
-                            <th>操作</th>
+                            <th data-sort="name">Name <span class="sort-icon"></span></th>
+                            <th data-sort="type">Type <span class="sort-icon"></span></th>
+                            <th data-sort="tokensPerGame">Tokens/Game <span class="sort-icon"></span></th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -73,27 +73,27 @@
             </div>
             <div class="pagination">
                 <span class="page-info"></span>
-                <button class="btn btn-sm page-prev">上一页</button>
-                <button class="btn btn-sm page-next">下一页</button>
+                <button class="btn btn-sm page-prev">Prev</button>
+                <button class="btn btn-sm page-next">Next</button>
             </div>
         </section>
 
-        <!-- 充值消费 Tab -->
+        <!-- Transactions Tab -->
         <section id="tab-transactions" class="tab-content">
             <div class="toolbar">
-                <input type="text" id="transaction-search" class="search-input" placeholder="搜索交易记录...">
-                <button id="recharge-btn" class="btn btn-success">+ 充值</button>
-                <button id="consume-btn" class="btn btn-warning">- 消费扣币</button>
+                <input type="text" id="transaction-search" class="search-input" placeholder="Search transactions...">
+                <button id="recharge-btn" class="btn btn-success">+ Recharge</button>
+                <button id="consume-btn" class="btn btn-warning">- Consume</button>
             </div>
             <div class="table-wrapper">
                 <table id="transaction-table">
                     <thead>
                         <tr>
-                            <th>会员</th>
-                            <th>金额</th>
-                            <th>代币数</th>
-                            <th>机器</th>
-                            <th>时间</th>
+                            <th>Member</th>
+                            <th>Amount</th>
+                            <th>Tokens</th>
+                            <th>Machine</th>
+                            <th>Time</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -101,23 +101,23 @@
             </div>
             <div class="pagination">
                 <span class="page-info"></span>
-                <button class="btn btn-sm page-prev">上一页</button>
-                <button class="btn btn-sm page-next">下一页</button>
+                <button class="btn btn-sm page-prev">Prev</button>
+                <button class="btn btn-sm page-next">Next</button>
             </div>
         </section>
 
-        <!-- 员工管理 Tab (admin only) -->
+        <!-- Staff Tab (admin only) -->
         <section id="tab-staff" class="tab-content">
             <div class="toolbar">
-                <input type="text" id="staff-search" class="search-input" placeholder="搜索用户名...">
+                <input type="text" id="staff-search" class="search-input" placeholder="Search username...">
             </div>
             <div class="table-wrapper">
                 <table id="staff-table">
                     <thead>
                         <tr>
-                            <th data-sort="username">用户名 <span class="sort-icon"></span></th>
-                            <th>身份</th>
-                            <th>操作</th>
+                            <th data-sort="username">Username <span class="sort-icon"></span></th>
+                            <th>Role</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -125,13 +125,13 @@
             </div>
             <div class="pagination">
                 <span class="page-info"></span>
-                <button class="btn btn-sm page-prev">上一页</button>
-                <button class="btn btn-sm page-next">下一页</button>
+                <button class="btn btn-sm page-prev">Prev</button>
+                <button class="btn btn-sm page-next">Next</button>
             </div>
         </section>
     </div>
 
-    <!-- 模态框 -->
+    <!-- Modal -->
     <div id="modal-overlay" class="modal-overlay hidden">
         <div class="modal">
             <div class="modal-header">
@@ -140,8 +140,8 @@
             </div>
             <div class="modal-body" id="modal-body"></div>
             <div class="modal-footer">
-                <button id="modal-cancel" class="btn">取消</button>
-                <button id="modal-submit" class="btn btn-primary">确定</button>
+                <button id="modal-cancel" class="btn">Cancel</button>
+                <button id="modal-submit" class="btn btn-primary">OK</button>
             </div>
         </div>
     </div>

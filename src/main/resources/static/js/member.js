@@ -48,7 +48,7 @@ const MemberModule = {
     render(list, total) {
         this.tableBody.innerHTML = '';
         if (!list || list.length === 0) {
-            this.tableBody.innerHTML = '<tr><td colspan="6" class="empty-row">暂无数据</td></tr>';
+            this.tableBody.innerHTML = '<tr><td colspan="6" class="empty-row">No data</td></tr>';
         } else {
             list.forEach(m => {
                 const tr = document.createElement('tr');
@@ -59,8 +59,8 @@ const MemberModule = {
                     <td>${m.tokenBalance}</td>
                     <td>￥${(m.accumulatedSpend || 0).toFixed(2)}</td>
                     <td>
-                        <button class="btn-edit" data-id="${m.memberId}">编辑</button>
-                        <button class="btn-del" data-id="${m.memberId}">删除</button>
+                        <button class="btn-edit" data-id="${m.memberId}">Edit</button>
+                        <button class="btn-del" data-id="${m.memberId}">Delete</button>
                     </td>`;
                 tr.querySelector('.btn-edit').addEventListener('click', () => this.showForm(m));
                 tr.querySelector('.btn-del').addEventListener('click', () => this.confirmDelete(m.memberId));
@@ -68,7 +68,7 @@ const MemberModule = {
             });
         }
 
-        this.pageInfo.textContent = `共 ${total} 条，第 ${this.page} 页`;
+        this.pageInfo.textContent = `Total ${total}, Page ${this.page}`;
         this.prevBtn.disabled = this.page <= 1;
         this.nextBtn.disabled = this.page * this.size >= total;
 
@@ -83,27 +83,27 @@ const MemberModule = {
 
     showForm(member) {
         const isEdit = !!member;
-        document.getElementById('modal-title').textContent = isEdit ? '编辑会员' : '新增会员';
+        document.getElementById('modal-title').textContent = isEdit ? 'Edit Member' : 'Add Member';
         document.getElementById('modal-body').innerHTML = `
             <div class="form-group">
-                <label>姓名 <span style="color:red">*</span></label>
+                <label>Name <span style="color:red">*</span></label>
                 <input id="form-name" value="${escHtml(member ? member.name : '')}">
             </div>
             <div class="form-group">
-                <label>电话</label>
+                <label>Phone</label>
                 <input id="form-phone" value="${escHtml(member ? (member.phone || '') : '')}">
             </div>
             <div class="form-group">
-                <label>VIP等级</label>
+                <label>VIP Level</label>
                 <select id="form-vip">
-                    <option value="普通会员" ${member && member.vipLevel === '普通会员' ? 'selected' : ''}>普通会员</option>
-                    <option value="银卡会员" ${member && member.vipLevel === '银卡会员' ? 'selected' : ''}>银卡会员</option>
-                    <option value="金卡会员" ${member && member.vipLevel === '金卡会员' ? 'selected' : ''}>金卡会员</option>
+                    <option value="Regular" ${member && member.vipLevel === 'Regular' ? 'selected' : ''}>Regular</option>
+                    <option value="Silver" ${member && member.vipLevel === 'Silver' ? 'selected' : ''}>Silver</option>
+                    <option value="Gold" ${member && member.vipLevel === 'Gold' ? 'selected' : ''}>Gold</option>
                 </select>
             </div>
             ${isEdit ? `
             <div class="form-group">
-                <label>代币余额</label>
+                <label>Token Balance</label>
                 <input id="form-balance" type="number" value="${member.tokenBalance || 0}">
             </div>` : ''}`;
 
@@ -125,7 +125,7 @@ const MemberModule = {
     },
 
     async confirmDelete(id) {
-        if (!confirm('确定要删除该会员吗？')) return;
+        if (!confirm('Delete this member?')) return;
         try {
             await API.del(`/api/members/${id}`);
             this.load();

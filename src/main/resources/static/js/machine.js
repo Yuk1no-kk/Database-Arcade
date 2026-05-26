@@ -48,11 +48,11 @@ const MachineModule = {
     render(list, total) {
         this.tableBody.innerHTML = '';
         if (!list || list.length === 0) {
-            this.tableBody.innerHTML = '<tr><td colspan="5" class="empty-row">暂无数据</td></tr>';
+            this.tableBody.innerHTML = '<tr><td colspan="5" class="empty-row">No data</td></tr>';
         } else {
             list.forEach(m => {
                 const statusClass = m.status === 'available' ? 'status-available' : 'status-maintenance';
-                const statusText = m.status === 'available' ? '可用' : '维护中';
+                const statusText = m.status === 'available' ? 'Available' : 'Maintenance';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${escHtml(m.name)}</td>
@@ -60,8 +60,8 @@ const MachineModule = {
                     <td>${m.tokensPerGame}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td>
-                        <button class="btn-edit" data-id="${m.machineId}">编辑</button>
-                        <button class="btn-del" data-id="${m.machineId}">删除</button>
+                        <button class="btn-edit" data-id="${m.machineId}">Edit</button>
+                        <button class="btn-del" data-id="${m.machineId}">Delete</button>
                     </td>`;
                 tr.querySelector('.btn-edit').addEventListener('click', () => this.showForm(m));
                 tr.querySelector('.btn-del').addEventListener('click', () => this.confirmDelete(m.machineId));
@@ -69,7 +69,7 @@ const MachineModule = {
             });
         }
 
-        this.pageInfo.textContent = `共 ${total} 条，第 ${this.page} 页`;
+        this.pageInfo.textContent = `Total ${total}, Page ${this.page}`;
         this.prevBtn.disabled = this.page <= 1;
         this.nextBtn.disabled = this.page * this.size >= total;
 
@@ -83,25 +83,25 @@ const MachineModule = {
 
     showForm(machine) {
         const isEdit = !!machine;
-        document.getElementById('modal-title').textContent = isEdit ? '编辑游戏机' : '新增游戏机';
+        document.getElementById('modal-title').textContent = isEdit ? 'Edit Machine' : 'Add Machine';
         document.getElementById('modal-body').innerHTML = `
             <div class="form-group">
-                <label>名称 <span style="color:red">*</span></label>
+                <label>Name <span style="color:red">*</span></label>
                 <input id="form-name" value="${escHtml(machine ? machine.name : '')}">
             </div>
             <div class="form-group">
-                <label>类型</label>
-                <input id="form-type" value="${escHtml(machine ? (machine.type || '') : '')}" placeholder="如：赛车、射击">
+                <label>Type</label>
+                <input id="form-type" value="${escHtml(machine ? (machine.type || '') : '')}" placeholder="e.g. Racing, Shooter">
             </div>
             <div class="form-group">
-                <label>单次耗币</label>
+                <label>Tokens/Game</label>
                 <input id="form-tokens" type="number" value="${machine ? (machine.tokensPerGame || 1) : 1}" min="1">
             </div>
             <div class="form-group">
-                <label>状态</label>
+                <label>Status</label>
                 <select id="form-status">
-                    <option value="available" ${machine && machine.status === 'available' ? 'selected' : ''}>可用</option>
-                    <option value="in_maintenance" ${machine && machine.status === 'in_maintenance' ? 'selected' : ''}>维护中</option>
+                    <option value="available" ${machine && machine.status === 'available' ? 'selected' : ''}>Available</option>
+                    <option value="in_maintenance" ${machine && machine.status === 'in_maintenance' ? 'selected' : ''}>Maintenance</option>
                 </select>
             </div>`;
 
@@ -123,7 +123,7 @@ const MachineModule = {
     },
 
     async confirmDelete(id) {
-        if (!confirm('确定要删除该游戏机吗？')) return;
+        if (!confirm('Delete this machine?')) return;
         try {
             await API.del(`/api/machines/${id}`);
             this.load();

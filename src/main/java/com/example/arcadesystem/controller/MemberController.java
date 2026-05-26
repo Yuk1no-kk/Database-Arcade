@@ -34,17 +34,17 @@ public class MemberController {
 
     @PostMapping
     public ApiResponse<Member> create(@RequestBody Member member) {
-        return ApiResponse.ok("新增成功", memberService.create(member));
+        return ApiResponse.ok("Created successfully", memberService.create(member));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<Member> update(@PathVariable int id, @RequestBody Member member) {
-        return ApiResponse.ok("修改成功", memberService.update(id, member));
+        return ApiResponse.ok("Updated successfully", memberService.update(id, member));
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable int id) {
         memberService.delete(id);
-        return ApiResponse.ok("删除成功", null);
+        return ApiResponse.ok("Deleted successfully", null);
     }
 }

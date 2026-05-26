@@ -27,14 +27,14 @@ public class MachineService {
     public Machine getById(int id) {
         Machine machine = machineDao.findById(id);
         if (machine == null) {
-            throw new NotFoundException("游戏机不存在");
+            throw new NotFoundException("Machine not found");
         }
         return machine;
     }
 
     public Machine create(Machine machine) {
         if (machine.getName() == null || machine.getName().isBlank()) {
-            throw new BusinessException("名称不能为空");
+            throw new BusinessException("Name is required");
         }
         return machineDao.save(machine);
     }
@@ -42,7 +42,7 @@ public class MachineService {
     public Machine update(int id, Machine machine) {
         Machine existing = getById(id);
         if (machine.getName() == null || machine.getName().isBlank()) {
-            throw new BusinessException("名称不能为空");
+            throw new BusinessException("Name is required");
         }
         existing.setName(machine.getName());
         existing.setType(machine.getType());
@@ -56,7 +56,7 @@ public class MachineService {
     public void delete(int id) {
         getById(id);
         if (machineDao.hasGameSessions(id)) {
-            throw new BusinessException("该游戏机存在游玩记录，无法删除");
+            throw new BusinessException("Cannot delete machine with game session records");
         }
         machineDao.deleteById(id);
     }

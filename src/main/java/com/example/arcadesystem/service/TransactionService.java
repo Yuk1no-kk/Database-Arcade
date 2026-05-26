@@ -31,10 +31,10 @@ public class TransactionService {
     public void recharge(int memberId, BigDecimal amount) {
         Member member = memberDao.findById(memberId);
         if (member == null) {
-            throw new NotFoundException("会员不存在");
+            throw new NotFoundException("Member not found");
         }
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BusinessException("金额必须大于0");
+            throw new BusinessException("Amount must be greater than 0");
         }
         int tokens = amount.intValue() * 10;
         transactionDao.saveTransaction(memberId, amount, tokens);
@@ -45,17 +45,17 @@ public class TransactionService {
     public void consume(int memberId, int machineId, int tokens) {
         Member member = memberDao.findById(memberId);
         if (member == null) {
-            throw new NotFoundException("会员不存在");
+            throw new NotFoundException("Member not found");
         }
         Machine machine = machineDao.findById(machineId);
         if (machine == null) {
-            throw new NotFoundException("游戏机不存在");
+            throw new NotFoundException("Machine not found");
         }
         if (member.getTokenBalance() < tokens) {
-            throw new BusinessException("余额不足，无法消费");
+            throw new BusinessException("Insufficient balance");
         }
         if (tokens <= 0) {
-            throw new BusinessException("消耗代币数必须大于0");
+            throw new BusinessException("Token count must be greater than 0");
         }
 
         transactionDao.deductTokens(memberId, tokens);

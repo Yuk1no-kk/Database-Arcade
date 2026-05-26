@@ -27,14 +27,14 @@ public class MemberService {
     public Member getById(int id) {
         Member member = memberDao.findById(id);
         if (member == null) {
-            throw new NotFoundException("会员不存在");
+            throw new NotFoundException("Member not found");
         }
         return member;
     }
 
     public Member create(Member member) {
         if (member.getName() == null || member.getName().isBlank()) {
-            throw new BusinessException("姓名不能为空");
+            throw new BusinessException("Name is required");
         }
         return memberDao.save(member);
     }
@@ -42,7 +42,7 @@ public class MemberService {
     public Member update(int id, Member member) {
         Member existing = getById(id);
         if (member.getName() == null || member.getName().isBlank()) {
-            throw new BusinessException("姓名不能为空");
+            throw new BusinessException("Name is required");
         }
         existing.setName(member.getName());
         existing.setPhone(member.getPhone());
@@ -56,7 +56,7 @@ public class MemberService {
     public void delete(int id) {
         getById(id);
         if (memberDao.hasTransactions(id)) {
-            throw new BusinessException("该会员存在交易记录，无法删除");
+            throw new BusinessException("Cannot delete member with transaction records");
         }
         memberDao.deleteById(id);
     }

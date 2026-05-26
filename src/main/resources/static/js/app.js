@@ -4,7 +4,7 @@ if (!user) {
     window.location.href = '/login.html';
 }
 
-document.getElementById('current-user').textContent = `${user.name || user.username} (${user.permissionLevel === 'admin' ? '管理员' : '员工'})`;
+document.getElementById('current-user').textContent = `${user.name || user.username} (${user.permissionLevel === 'admin' ? 'Admin' : 'Worker'})`;
 
 document.getElementById('logout-btn').addEventListener('click', () => {
     sessionStorage.clear();

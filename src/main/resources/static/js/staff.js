@@ -49,17 +49,17 @@ const StaffModule = {
     render(list, total) {
         this.tableBody.innerHTML = '';
         if (!list || list.length === 0) {
-            this.tableBody.innerHTML = '<tr><td colspan="3" class="empty-row">暂无员工</td></tr>';
+            this.tableBody.innerHTML = '<tr><td colspan="3" class="empty-row">No staff</td></tr>';
         } else {
             list.forEach(s => {
-                const roleText = s.permissionLevel === 'admin' ? '管理员' : '员工';
+                const roleText = s.permissionLevel === 'admin' ? 'Admin' : 'Worker';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${escHtml(s.username)}</td>
                     <td>${roleText}</td>
                     <td>
-                        <button class="btn-edit" data-id="${s.staffId}" data-role="${s.permissionLevel}">更改权限</button>
-                        <button class="btn-del" data-id="${s.staffId}">删除</button>
+                        <button class="btn-edit" data-id="${s.staffId}" data-role="${s.permissionLevel}">Change Role</button>
+                        <button class="btn-del" data-id="${s.staffId}">Delete</button>
                     </td>`;
                 tr.querySelector('.btn-edit').addEventListener('click', () => this.showChangeRole(s.staffId, s.permissionLevel));
                 tr.querySelector('.btn-del').addEventListener('click', () => this.confirmDelete(s.staffId));
@@ -67,7 +67,7 @@ const StaffModule = {
             });
         }
 
-        this.pageInfo.textContent = `共 ${total} 条，第 ${this.page} 页`;
+        this.pageInfo.textContent = `Total ${total}, Page ${this.page}`;
         this.prevBtn.disabled = this.page <= 1;
         this.nextBtn.disabled = this.page * this.size >= total;
 
@@ -80,13 +80,13 @@ const StaffModule = {
     },
 
     showChangeRole(staffId, currentRole) {
-        document.getElementById('modal-title').textContent = '更改权限';
+        document.getElementById('modal-title').textContent = 'Change Role';
         document.getElementById('modal-body').innerHTML = `
             <div class="form-group">
-                <label>身份</label>
+                <label>Role</label>
                 <select id="form-role">
-                    <option value="worker" ${currentRole === 'worker' ? 'selected' : ''}>员工 (worker)</option>
-                    <option value="admin" ${currentRole === 'admin' ? 'selected' : ''}>管理员 (admin)</option>
+                    <option value="worker" ${currentRole === 'worker' ? 'selected' : ''}>Worker</option>
+                    <option value="admin" ${currentRole === 'admin' ? 'selected' : ''}>Admin</option>
                 </select>
             </div>`;
 
@@ -99,7 +99,7 @@ const StaffModule = {
     },
 
     async confirmDelete(id) {
-        if (!confirm('确定要删除该员工吗？')) return;
+        if (!confirm('Delete this staff member?')) return;
         try {
             await API.del(`/api/staff/${id}`);
             this.load();

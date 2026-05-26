@@ -23,7 +23,7 @@ public class AuthController {
         String password = body.get("password");
         String permissionLevel = body.get("permissionLevel");
         Staff staff = staffService.register(username, password, permissionLevel);
-        return ApiResponse.ok("注册成功", staff);
+        return ApiResponse.ok("Registration successful", staff);
     }
 
     @PostMapping("/auth/login")
@@ -31,7 +31,7 @@ public class AuthController {
         String username = body.get("username");
         String password = body.get("password");
         Staff staff = staffService.login(username, password);
-        return ApiResponse.ok("登录成功", staff);
+        return ApiResponse.ok("Login successful", staff);
     }
 
     // ---- staff management (admin only, excludes self) ----
@@ -50,12 +50,12 @@ public class AuthController {
     @PutMapping("/staff/{id}/permission")
     public ApiResponse<Void> updatePermission(@PathVariable int id, @RequestBody Map<String, String> body) {
         staffService.updatePermission(id, body.get("permissionLevel"));
-        return ApiResponse.ok("修改成功", null);
+        return ApiResponse.ok("Updated successfully", null);
     }
 
     @DeleteMapping("/staff/{id}")
     public ApiResponse<Void> delete(@PathVariable int id) {
         staffService.delete(id);
-        return ApiResponse.ok("删除成功", null);
+        return ApiResponse.ok("Deleted successfully", null);
     }
 }

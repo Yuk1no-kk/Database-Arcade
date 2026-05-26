@@ -34,17 +34,17 @@ public class MachineController {
 
     @PostMapping
     public ApiResponse<Machine> create(@RequestBody Machine machine) {
-        return ApiResponse.ok("新增成功", machineService.create(machine));
+        return ApiResponse.ok("Created successfully", machineService.create(machine));
     }
 
     @PutMapping("/{id}")
     public ApiResponse<Machine> update(@PathVariable int id, @RequestBody Machine machine) {
-        return ApiResponse.ok("修改成功", machineService.update(id, machine));
+        return ApiResponse.ok("Updated successfully", machineService.update(id, machine));
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable int id) {
         machineService.delete(id);
-        return ApiResponse.ok("删除成功", null);
+        return ApiResponse.ok("Deleted successfully", null);
     }
 }
