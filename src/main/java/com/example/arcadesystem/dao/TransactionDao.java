@@ -17,9 +17,9 @@ public class TransactionDao {
         this.jdbc = jdbc;
     }
 
-    public void saveTransaction(int memberId, BigDecimal amount, int tokens) {
-        jdbc.update("INSERT INTO token_transactions (member_id, package_id, amount_paid, tokens_purchased) VALUES (?, NULL, ?, ?)",
-                memberId, amount, tokens);
+    public void saveTransaction(int memberId, BigDecimal amount, int tokens, Integer packageId) {
+        jdbc.update("INSERT INTO token_transactions (member_id, package_id, amount_paid, tokens_purchased) VALUES (?, ?, ?, ?)",
+                memberId, packageId, amount, tokens);
     }
 
     public void addTokens(int memberId, int tokens, BigDecimal amount) {

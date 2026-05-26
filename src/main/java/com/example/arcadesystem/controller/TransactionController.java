@@ -20,8 +20,14 @@ public class TransactionController {
     @PostMapping("/transactions/recharge")
     public ApiResponse<Void> recharge(@RequestBody Map<String, Object> body) {
         int memberId = ((Number) body.get("memberId")).intValue();
-        BigDecimal amount = new BigDecimal(body.get("amount").toString());
-        transactionService.recharge(memberId, amount);
+        Object packageIdObj = body.get("packageId");
+        if (packageIdObj != null) {
+            int packageId = ((Number) packageIdObj).intValue();
+            transactionService.rechargeByPackage(memberId, packageId);
+        } else {
+            BigDecimal amount = new BigDecimal(body.get("amount").toString());
+            transactionService.recharge(memberId, amount);
+        }
         return ApiResponse.ok("Recharge successful", null);
     }
 

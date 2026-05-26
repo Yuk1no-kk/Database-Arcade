@@ -2,11 +2,13 @@ package com.example.arcadesystem.service;
 
 import com.example.arcadesystem.dao.MachineDao;
 import com.example.arcadesystem.dao.MemberDao;
+import com.example.arcadesystem.dao.PackageDao;
 import com.example.arcadesystem.dao.TransactionDao;
 import com.example.arcadesystem.exception.BusinessException;
 import com.example.arcadesystem.exception.NotFoundException;
 import com.example.arcadesystem.model.Machine;
 import com.example.arcadesystem.model.Member;
+import com.example.arcadesystem.model.TokenPackage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +22,13 @@ public class TransactionService {
     private final TransactionDao transactionDao;
     private final MemberDao memberDao;
     private final MachineDao machineDao;
+    private final PackageDao packageDao;
 
-    public TransactionService(TransactionDao transactionDao, MemberDao memberDao, MachineDao machineDao) {
+    public TransactionService(TransactionDao transactionDao, MemberDao memberDao, MachineDao machineDao, PackageDao packageDao) {
         this.transactionDao = transactionDao;
         this.memberDao = memberDao;
         this.machineDao = machineDao;
+        this.packageDao = packageDao;
     }
 
     @Transactional
@@ -37,8 +41,24 @@ public class TransactionService {
             throw new BusinessException("Amount must be greater than 0");
         }
         int tokens = amount.intValue() * 10;
-        transactionDao.saveTransaction(memberId, amount, tokens);
+        transactionDao.saveTransaction(memberId, amount, tokens, null);
         transactionDao.addTokens(memberId, tokens, amount);
+    }
+
+    @Transactional
+    public void rechargeByPackage(int memberId, int packageId) {
+        Member member = memberDao.findById(memberId);
+        if (member == null) {
+            throw new NotFoundException("Member not found");
+        }
+        TokenPackage pkg = packageDao.findById(packageId);
+        if (pkg == null) {
+            throw new NotFoundException("Package not found");
+        }
+        int tokens = pkg.getTokenCount();
+        BigDecimal price = pkg.getPrice();
+        transactionDao.saveTransaction(memberId, price, tokens, packageId);
+        transactionDao.addTokens(memberId, tokens, price);
     }
 
     @Transactional
