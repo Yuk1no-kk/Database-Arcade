@@ -32,6 +32,10 @@ public class TransactionDao {
                 tokens, memberId);
     }
 
+    public void nullifyPackageId(int packageId) {
+        jdbc.update("UPDATE token_transactions SET package_id = NULL WHERE package_id = ?", packageId);
+    }
+
     public void recordGameSession(int memberId, int machineId, int tokens) {
         jdbc.update("INSERT INTO game_sessions (member_id, machine_id, token_consumed) VALUES (?, ?, ?)",
                 memberId, machineId, tokens);

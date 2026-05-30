@@ -1,6 +1,7 @@
 package com.example.arcadesystem.service;
 
 import com.example.arcadesystem.dao.PackageDao;
+import com.example.arcadesystem.dao.TransactionDao;
 import com.example.arcadesystem.exception.BusinessException;
 import com.example.arcadesystem.exception.NotFoundException;
 import com.example.arcadesystem.model.TokenPackage;
@@ -13,9 +14,11 @@ import java.util.List;
 public class PackageService {
 
     private final PackageDao packageDao;
+    private final TransactionDao transactionDao;
 
-    public PackageService(PackageDao packageDao) {
+    public PackageService(PackageDao packageDao, TransactionDao transactionDao) {
         this.packageDao = packageDao;
+        this.transactionDao = transactionDao;
     }
 
     public List<TokenPackage> listAll() {
@@ -57,6 +60,7 @@ public class PackageService {
 
     public void delete(int id) {
         getById(id);
+        transactionDao.nullifyPackageId(id);
         packageDao.deleteById(id);
     }
 }
